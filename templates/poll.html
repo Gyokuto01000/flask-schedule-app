@@ -29,9 +29,14 @@
 
         <button type="submit" class="btn btn-success">送信</button>
     </form>
+    <div class="mt-4 alert alert-info">
+    <p>👇 このURLを参加者に送ってください：</p>
+    <code>{{ request.url }}</code>
+</div>
+
 
     <div class="mt-4">
-        <a href="{{ url_for('index') }}" class="btn btn-link">イベント作成ページに戻る</a>
+        
     </div>
 </body>
 </html>

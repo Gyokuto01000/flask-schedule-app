@@ -17,18 +17,20 @@
             </tr>
         </thead>
         <tbody>
-            {% for date, participants_list in selected_dates.items() %}
-            <tr>
-                <td>{{ date }}</td>
-                <td>
-                    {% if participants_list %}
-                        {{ participants_list | join(', ') }}
-                    {% else %}
-                        なし
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
+{% set max_count = selected_dates.values() | map('length') | max %}
+
+{% for date, participants_list in selected_dates.items() %}
+<tr class="{% if participants_list|length == max_count and participants_list %}table-success{% endif %}">
+    <td>{{ date }}</td>
+    <td>
+        {% if participants_list %}
+            {{ participants_list | join(', ') }}
+        {% else %}
+            なし
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
         </tbody>
     </table>
 
