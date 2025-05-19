@@ -54,6 +54,42 @@ with app.app_context():
 def index():
     return render_template('index.html')
 
+@app.route('/events')
+def events():
+    all_events = Event.query.order_by(Event.id.desc()).all()
+    return render_template('events_list.html', events=all_events)
+
+@app.route('/events/<int:event_id>/edit', methods=['GET', 'POST'])
+def edit_event(event_id):
+    event = Event.query.get_or_404(event_id)
+    if request.method == 'POST':
+        event.name = request.form['event_name'].strip()
+        event.date_options = request.form['date_options'].strip()
+        db.session.commit()
+        flash('イベントを更新しました！', 'success')
+        return redirect(url_for('events'))
+    return render_template('edit_event.html', event=event)
+
+@app.route('/events/<int:event_id>')
+def event_detail(event_id):
+    event = Event.query.get_or_404(event_id)
+    return render_template('event_detail.html', event=event)
+
+@app.route('/events/delete', methods=['POST'])
+def delete_events():
+    event_ids = request.form.getlist('event_ids')
+    if not event_ids:
+        flash('削除するイベントを選択してください。', 'warning')
+        return redirect(url_for('events'))
+ 
+    for eid in event_ids:
+        event = Event.query.get(eid)
+        if event:
+            db.session.delete(event)
+    db.session.commit()
+    flash(f'{len(event_ids)}件のイベントを削除しました。', 'success')
+    return redirect(url_for('events'))
+
 @app.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':

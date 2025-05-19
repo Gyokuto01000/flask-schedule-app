@@ -3,58 +3,70 @@
 <head>
   <meta charset="utf-8" />
   <title>イベント作成</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
-<body class="container py-3">
-  <h1>イベント作成</h1>
-  <form method="POST">
-    <div class="mb-3">
-      <label>イベント名</label>
-      <input type="text" name="event_name" class="form-control" required>
+<body class="bg-light py-5">
+  <div class="container">
+    <div class="card shadow">
+      <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">イベント作成フォーム</h2>
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          <div class="mb-4">
+            <label class="form-label fw-bold">イベント名</label>
+            <input type="text" name="event_name" class="form-control" required placeholder="例：新年会、勉強会 など">
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">候補日（複数選択可能）</label>
+            <input type="text" id="date_options" name="date_options" class="form-control" placeholder="日付を選択してください" readonly required>
+          </div>
+
+          <h4 class="mt-5 mb-3">質問一覧</h4>
+          <div id="questions-container"></div>
+          <button type="button" class="btn btn-outline-secondary mb-4" onclick="addQuestion()">
+            ＋ 質問を追加
+          </button>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-success btn-lg">✅ イベントを作成する</button>
+          </div>
+        </form>
+      </div>
     </div>
-
-    <!-- カレンダーで候補日選択 -->
-    <div class="mb-3">
-      <label for="date_options">候補日（複数選択可能）</label>
-      <input type="text" id="date_options" name="date_options" class="form-control" placeholder="日付を選択してください" readonly required>
-    </div>
-
-    <h3>質問一覧</h3>
-    <div id="questions-container"></div>
-    <button type="button" class="btn btn-secondary mb-3" onclick="addQuestion()">質問を追加</button>
-
-    <button type="submit" class="btn btn-primary">イベント作成</button>
-  </form>
+  </div>
 
   <!-- Flatpickrの読み込み -->
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
   <script>
-    // カレンダー初期化
     flatpickr("#date_options", {
       mode: "multiple",
       dateFormat: "Y-m-d",
       locale: "ja"
     });
 
-    // 質問追加ボタンのJS
     function addQuestion() {
       const container = document.getElementById('questions-container');
       const idx = container.children.length;
       const qDiv = document.createElement('div');
-      qDiv.classList.add('mb-3', 'border', 'p-3');
+      qDiv.classList.add('mb-4', 'p-3', 'bg-white', 'border', 'rounded', 'shadow-sm');
       qDiv.innerHTML = `
-        <label>質問テキスト</label>
-        <input type="text" name="question_text" class="form-control mb-2" required>
-        <label>回答タイプ</label>
-        <select name="question_type" class="form-select mb-2" onchange="toggleOptions(this, ${idx})" required>
+        <label class="form-label fw-bold">質問テキスト</label>
+        <input type="text" name="question_text" class="form-control mb-3" required placeholder="例：参加希望ですか？">
+
+        <label class="form-label fw-bold">回答タイプ</label>
+        <select name="question_type" class="form-select mb-3" onchange="toggleOptions(this, ${idx})" required>
           <option value="text">テキストボックス</option>
           <option value="radio">ラジオボタン</option>
           <option value="checkbox">チェックボックス</option>
         </select>
-        <div class="mb-2" id="options-area-${idx}" style="display:none;">
-          <label>選択肢 (カンマ区切りで入力)</label>
+
+        <div class="mb-3" id="options-area-${idx}" style="display:none;">
+          <label class="form-label">選択肢（カンマ区切りで入力）</label>
           <input type="text" name="options_${idx}" class="form-control" placeholder="例：はい,いいえ,多分">
         </div>
       `;
@@ -63,12 +75,13 @@
 
     function toggleOptions(sel, idx){
       const optArea = document.getElementById(`options-area-${idx}`);
-      if(sel.value === 'radio' || sel.value === 'checkbox'){
+      const input = optArea.querySelector('input');
+      if (sel.value === 'radio' || sel.value === 'checkbox') {
         optArea.style.display = 'block';
-        optArea.querySelector('input').required = true;
+        input.required = true;
       } else {
         optArea.style.display = 'none';
-        optArea.querySelector('input').required = false;
+        input.required = false;
       }
     }
   </script>

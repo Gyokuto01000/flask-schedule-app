@@ -3,57 +3,73 @@
 <head>
   <meta charset="utf-8" />
   <title>結果 - {{ event.name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
-<body class="container py-3">
-  <h1>{{ event.name }} の結果</h1>
+<body class="bg-light py-5">
+  <div class="container">
+    <div class="card shadow">
+      <div class="card-header bg-success text-white">
+        <h2 class="mb-0">{{ event.name }} の結果</h2>
+      </div>
+      <div class="card-body">
 
-  <h2>参加可能日ごとの参加者</h2>
-  <table class="table table-bordered table-striped">
-    <thead>
-      <tr>
-        <th>日付</th>
-        <th>参加者名</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for d in display_dates %}
-        <tr>
-          <td>{{ d.label }}</td>
-          <td>
-            {% if date_participants_map[d.value] %}
-              {{ date_participants_map[d.value] | join(', ') }}
-            {% else %}
-              -
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+        <!-- 日付ごとの参加者 -->
+        <h4 class="mb-3">📅 参加可能日ごとの参加者</h4>
+        <div class="table-responsive mb-5">
+          <table class="table table-bordered table-striped align-middle">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 30%;">日付</th>
+                <th>参加者名</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in display_dates %}
+                <tr>
+                  <td><strong>{{ d.label }}</strong></td>
+                  <td>
+                    {% if date_participants_map[d.value] %}
+                      {{ date_participants_map[d.value] | join(', ') }}
+                    {% else %}
+                      <span class="text-muted">-</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
 
-  <h2>参加者ごとの回答詳細</h2>
-  <table class="table table-bordered table-hover table-sm">
-    <thead class="table-light">
-      <tr>
-        <th>参加者名</th>
-        <th>参加可能日</th>
-        {% for q in questions %}
-          <th>{{ q.text }}</th>
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in participant_answers %}
-        <tr>
-          <td>{{ p.name }}</td>
-          <td>{{ p.selected_dates | join(', ') }}</td>
-          {% for q in questions %}
-            <td>{{ p.answers.get(q.id, '-') }}</td>
-          {% endfor %}
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+        <!-- 参加者ごとの詳細 -->
+        <h4 class="mb-3">🧑‍🤝‍🧑 参加者ごとの回答詳細</h4>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover table-sm align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>参加者名</th>
+                <th>参加可能日</th>
+                {% for q in questions %}
+                  <th>{{ q.text }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in participant_answers %}
+                <tr>
+                  <td><strong>{{ p.name }}</strong></td>
+                  <td>{{ p.selected_dates | join(', ') }}</td>
+                  {% for q in questions %}
+                    <td>{{ p.answers.get(q.id, '-') }}</td>
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </body>
 </html>

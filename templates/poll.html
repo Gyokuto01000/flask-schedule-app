@@ -3,62 +3,85 @@
 <head>
   <meta charset="utf-8" />
   <title>回答フォーム - {{ event.name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
-<body class="container py-3">
+<body class="bg-light py-5">
+  <div class="container">
+    <div class="card shadow">
+      <div class="card-header bg-info text-white">
+        <h2 class="mb-0">{{ event.name }} への回答</h2>
+      </div>
+      <div class="card-body">
 
-  <h1>{{ event.name }} への回答</h1>
-
-  <!-- 回答URLの共有案内 -->
-  <div class="alert alert-info">
-    回答用リンク（このURLを参加者に送ってください）：<br>
-    <strong>{{ request.url }}</strong>
-  </div>
-
-  <form method="POST">
-    <div class="mb-3">
-      <label>名前</label>
-      <input type="text" name="name" class="form-control" required>
-    </div>
-
-    <!-- 日付選択をチェックボックスで表示 -->
-    <div class="mb-3">
-      <label>参加可能な日付を選択（複数選択可）</label><br>
-      {% for d in display_dates %}
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox" name="dates" id="date_{{ loop.index }}" value="{{ d.value }}">
-          <label class="form-check-label" for="date_{{ loop.index }}">{{ d.label }}</label>
+        <!-- 回答URLの共有案内 -->
+        <div class="alert alert-secondary">
+          <strong>このURLを参加者に共有してください：</strong><br>
+          <code>{{ request.url }}</code>
         </div>
-      {% endfor %}
-    </div>
 
-    {% if questions %}
-      <h3 class="mt-4">質問への回答</h3>
-      {% for q in questions %}
-        <div class="mb-3 border rounded p-3">
-          <label class="form-label">{{ q.text }}</label>
-          {% if q.type == 'text' %}
-            <input type="text" name="question_{{ q.id }}" class="form-control">
-          {% elif q.type == 'radio' %}
-            {% for opt in q.options %}
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="question_{{ q.id }}" id="q{{ q.id }}_opt{{ opt.id }}" value="{{ opt.text }}">
-                <label class="form-check-label" for="q{{ q.id }}_opt{{ opt.id }}">{{ opt.text }}</label>
-              </div>
-            {% endfor %}
-          {% elif q.type == 'checkbox' %}
-            {% for opt in q.options %}
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="question_{{ q.id }}" id="q{{ q.id }}_opt{{ opt.id }}" value="{{ opt.text }}">
-                <label class="form-check-label" for="q{{ q.id }}_opt{{ opt.id }}">{{ opt.text }}</label>
+        <form method="POST">
+          <!-- 名前入力 -->
+          <div class="mb-4">
+            <label class="form-label fw-bold">お名前</label>
+            <input type="text" name="name" class="form-control" required placeholder="例：山田 太郎">
+          </div>
+
+          <!-- 日付選択 -->
+          <div class="mb-4">
+            <label class="form-label fw-bold">参加可能な日付を選択（複数可）</label>
+            <div class="border rounded p-3 bg-white">
+              {% for d in display_dates %}
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="dates" id="date_{{ loop.index }}" value="{{ d.value }}">
+                  <label class="form-check-label" for="date_{{ loop.index }}">{{ d.label }}</label>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- 質問がある場合 -->
+          {% if questions %}
+            <h4 class="mt-5 mb-3">追加の質問</h4>
+            {% for q in questions %}
+              <div class="mb-4 border bg-white rounded p-3 shadow-sm">
+                <label class="form-label fw-bold">{{ q.text }}</label>
+
+                {% if q.type == 'text' %}
+                  <input type="text" name="question_{{ q.id }}" class="form-control mt-2" placeholder="ご回答を入力してください">
+
+                {% elif q.type == 'radio' %}
+                  <div class="mt-2">
+                    {% for opt in q.options %}
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="question_{{ q.id }}" id="q{{ q.id }}_opt{{ opt.id }}" value="{{ opt.text }}">
+                        <label class="form-check-label" for="q{{ q.id }}_opt{{ opt.id }}">{{ opt.text }}</label>
+                      </div>
+                    {% endfor %}
+                  </div>
+
+                {% elif q.type == 'checkbox' %}
+                  <div class="mt-2">
+                    {% for opt in q.options %}
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="question_{{ q.id }}" id="q{{ q.id }}_opt{{ opt.id }}" value="{{ opt.text }}">
+                        <label class="form-check-label" for="q{{ q.id }}_opt{{ opt.id }}">{{ opt.text }}</label>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
               </div>
             {% endfor %}
           {% endif %}
-        </div>
-      {% endfor %}
-    {% endif %}
 
-    <button type="submit" class="btn btn-primary mt-3">送信</button>
-  </form>
+          <!-- 送信ボタン -->
+          <div class="d-grid">
+            <button type="submit" class="btn btn-success btn-lg mt-4">✅ 回答を送信する</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
 </body>
 </html>
