@@ -1,4 +1,8 @@
-flask
-flask_sqlalchemy
-psycopg2-binary
-gunicorn
+services:
+  - type: web
+    name: flask-schedule-app
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn app:app
+    plan: free
+    jpholiday

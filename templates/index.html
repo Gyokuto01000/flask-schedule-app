@@ -9,6 +9,13 @@
     <h1 class="mb-4">日程調整アプリへようこそ！</h1>
     <p>イベントを作成して、みんなで参加できる日を決めましょう。</p>
 
-    <a href="{{ url_for('create') }}" class="btn btn-primary">イベントを作成する</a>
+    <!-- ボタンを横並びにするために flexbox を使用 -->
+    <div class="d-flex gap-3">
+        <!-- イベント作成ボタン -->
+        <a href="{{ url_for('create') }}" class="btn btn-primary">イベントを作成する</a>
+
+        <!-- イベント一覧へボタン -->
+        <a href="{{ url_for('events') }}" class="btn btn-secondary">イベント一覧へ</a>
+    </div>
 </body>
 </html>
