@@ -2,3 +2,4 @@ flask
 gunicorn
 flask_sqlalchemy
 jpholiday
+psycopg2-binary
