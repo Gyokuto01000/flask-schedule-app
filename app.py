@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 import os
 import datetime
@@ -51,7 +51,6 @@ def create():
 
 @app.route('/poll/<event_id>', methods=['GET', 'POST'])
 def poll(event_id):
-
     event = Event.query.get(event_id)
     if event is None:
         return "イベントが見つかりません", 404
@@ -59,11 +58,29 @@ def poll(event_id):
     if request.method == 'POST':
         participant_name = request.form['name']
         selected_dates = request.form.getlist('dates')
+        overwrite_confirm = request.form.get('overwrite_confirm')
 
+        existing_participant = Participant.query.filter_by(event_id=event.id, name=participant_name).first()
+
+        if existing_participant and overwrite_confirm != 'yes':
+            # 確認画面表示
+            return render_template(
+                'confirm_overwrite.html',
+                event=event,
+                participant_name=participant_name,
+                selected_dates=selected_dates
+            )
+
+        if existing_participant and overwrite_confirm == 'yes':
+            # 上書き処理
+            existing_participant.selected_dates = ','.join(selected_dates)
+            db.session.commit()
+            return redirect(url_for('results', event_id=event.id))
+
+        # 新規登録
         participant = Participant(name=participant_name, selected_dates=','.join(selected_dates), event_id=event.id)
         db.session.add(participant)
         db.session.commit()
-
         return redirect(url_for('results', event_id=event.id))
 
     # 曜日と祝日を付加し、日付順に並べる
@@ -177,6 +194,7 @@ def delete_events():
                 db.session.delete(event)
         db.session.commit()
     return redirect(url_for('events'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
