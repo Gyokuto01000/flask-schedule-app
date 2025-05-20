@@ -142,8 +142,6 @@ def event_detail(event_id):
                            most_selected_dates=most_selected_dates,
                            question_most_answers=question_most_answers)
 
-
-
 @app.route('/events/delete', methods=['POST'])
 def delete_events():
     event_ids = request.form.getlist('event_ids')
@@ -282,8 +280,10 @@ def poll(event_id):
         except:
             continue
 
-    return render_template('poll.html', event=event, display_dates=display_dates, questions=questions)
+    # 日付でソート（昇順）
+    display_dates.sort(key=lambda x: datetime.datetime.strptime(x['value'], '%Y-%m-%d').date())
 
+    return render_template('poll.html', event=event, display_dates=display_dates, questions=questions)
 
 
 from collections import Counter
@@ -293,8 +293,6 @@ def results(event_id):
     event = Event.query.get_or_404(event_id)
     questions = event.questions
 
-    
-    
     # 日付の参加者集計
     date_participants_map = {}
     for d_str in event.date_options.split(','):
@@ -373,19 +371,18 @@ def results(event_id):
                 label += f" 🎌{holiday_name}"
             display_dates.append({'value': d_str, 'label': label})
         except:
-            display_dates.append({'value': d_str, 'label': d_str})
+            continue
 
-        available_dates = [d.strip() for d in event.date_options.split(',') if d.strip()]
+    # 日付でソート（昇順）
+    display_dates.sort(key=lambda x: datetime.datetime.strptime(x['value'], '%Y-%m-%d').date())
 
-    return render_template('results.html', event=event, questions=questions,
-                           date_participants_map=date_participants_map,
+    return render_template('results.html',
+                           event=event,
+                           questions=questions,
                            participant_answers=participant_answers,
-                           display_dates=display_dates,
                            most_selected_dates=most_selected_dates,
                            question_most_answers=question_most_answers,
-                           date_participants=date_participants_map,
-                           available_dates=available_dates )
-
+                           display_dates=display_dates)
 
 if __name__ == '__main__':
     app.run(debug=True)
