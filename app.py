@@ -217,11 +217,15 @@ def poll(event_id):
 
 
 
+from collections import Counter
+
 @app.route('/results/<int:event_id>')
 def results(event_id):
     event = Event.query.get_or_404(event_id)
     questions = event.questions
 
+    
+    
     # 日付の参加者集計
     date_participants_map = {}
     for d_str in event.date_options.split(','):
@@ -248,6 +252,42 @@ def results(event_id):
             'answers': answers
         })
 
+    # 最多投票の参加日を取得
+    max_participation_count = 0
+    most_selected_dates = []
+    for d, participants_list in date_participants_map.items():
+        count = len(participants_list)
+        if count > max_participation_count:
+            max_participation_count = count
+            most_selected_dates = [d]
+        elif count == max_participation_count:
+            most_selected_dates.append(d)
+
+    # 質問ごとの最多回答を算出（ラジオ・チェックボックスのみ）
+    question_most_answers = {}
+    for q in questions:
+        if q.type not in ['radio', 'checkbox']:
+            continue
+        # 回答を集計
+        answers_for_q = []
+        for p_ans in participant_answers:
+            ans = p_ans['answers'].get(q.id)
+            if not ans:
+                continue
+            if q.type == 'checkbox':
+                # 複数回答はカンマ区切りなので分割
+                answers_for_q.extend([a.strip() for a in ans.split(',')])
+            else:
+                answers_for_q.append(ans.strip())
+        if answers_for_q:
+            counter = Counter(answers_for_q)
+            max_count = max(counter.values())
+            # 最多回答（複数ある場合はリスト）
+            most_answers = [ans for ans, cnt in counter.items() if cnt == max_count]
+            question_most_answers[q.id] = most_answers
+        else:
+            question_most_answers[q.id] = []
+
     # 日付に曜日・祝日付加
     weekdays = "月火水木金土日"
     display_dates = []
@@ -266,10 +306,17 @@ def results(event_id):
         except:
             display_dates.append({'value': d_str, 'label': d_str})
 
+        available_dates = [d.strip() for d in event.date_options.split(',') if d.strip()]
+
     return render_template('results.html', event=event, questions=questions,
                            date_participants_map=date_participants_map,
                            participant_answers=participant_answers,
-                           display_dates=display_dates)
+                           display_dates=display_dates,
+                           most_selected_dates=most_selected_dates,
+                           question_most_answers=question_most_answers,
+                           date_participants=date_participants_map,
+                           available_dates=available_dates )
+
 
 if __name__ == '__main__':
     app.run(debug=True)
