@@ -1,11 +1,87 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>イベント一覧</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+        h1 {
+            font-weight: 900;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        h1::before {
+            content: "📅";
+            font-size: 1.8rem;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #34495e;
+        }
+        .btn {
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn:hover {
+            transform: scale(1.02);
+        }
+        .btn-outline-primary {
+            border-color: #5c7cfa;
+            color: #5c7cfa;
+        }
+        .btn-outline-primary:hover {
+            background-color: #5c7cfa;
+            color: #fff;
+        }
+        .btn-outline-success {
+            border-color: #38b000;
+            color: #38b000;
+        }
+        .btn-outline-success:hover {
+            background-color: #38b000;
+            color: #fff;
+        }
+        .alert-info {
+            background-color: #eef5ff;
+            border: none;
+            color: #476d9e;
+            font-weight: 500;
+            border-radius: 10px;
+        }
+        .mt-5 .btn-primary {
+            background: linear-gradient(135deg, #5c7cfa 0%, #4c6ef5 100%);
+            border: none;
+        }
+        .mt-5 .btn-primary:hover {
+            background: linear-gradient(135deg, #4c6ef5 0%, #5c7cfa 100%);
+        }
+        .mt-5 .btn-secondary {
+            background-color: #868e96;
+            border: none;
+        }
+        .mt-5 .btn-secondary:hover {
+            background-color: #495057;
+        }
+    </style>
 </head>
 <body class="container py-5">
 
@@ -16,7 +92,7 @@
             {% for event in events %}
                 <div class="col">
                     <div class="card shadow-sm h-100">
-                        <div class="card-body">
+                        <div class="card-body d-flex flex-column justify-content-between">
                             <h5 class="card-title">{{ event.name }}</h5>
                             <div class="d-grid gap-2 mt-3">
                                 <a href="{{ url_for('poll', event_id=event.id) }}" class="btn btn-outline-primary">投票する</a>
@@ -28,14 +104,14 @@
             {% endfor %}
         </div>
     {% else %}
-        <div class="alert alert-info mt-4" role="alert">
+        <div class="alert alert-info mt-4 text-center" role="alert">
             現在、登録されているイベントはありません。
         </div>
     {% endif %}
 
     <div class="mt-5 d-flex flex-column flex-md-row gap-3">
-        <a href="{{ url_for('create') }}" class="btn btn-primary">新しいイベントを作成</a>
-        <a href="{{ url_for('events') }}" class="btn btn-secondary">イベント一覧へ</a>
+        <a href="{{ url_for('create') }}" class="btn btn-primary">＋ 新しいイベントを作成</a>
+        <a href="{{ url_for('events') }}" class="btn btn-secondary">🗂 イベント一覧へ</a>
     </div>
 
 </body>

@@ -43,47 +43,59 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
   <script>
-    flatpickr("#date_options", {
-      mode: "multiple",
-      dateFormat: "Y-m-d",
-      locale: "ja"
-    });
+  flatpickr("#date_options", {
+    mode: "multiple",
+    dateFormat: "Y-m-d",
+    locale: "ja"
+  });
 
-    function addQuestion() {
-      const container = document.getElementById('questions-container');
-      const idx = container.children.length;
-      const qDiv = document.createElement('div');
-      qDiv.classList.add('mb-4', 'p-3', 'bg-white', 'border', 'rounded', 'shadow-sm');
-      qDiv.innerHTML = `
+  function addQuestion() {
+    const container = document.getElementById('questions-container');
+    const idx = container.children.length;
+    const qDiv = document.createElement('div');
+    qDiv.classList.add('mb-4', 'p-3', 'bg-white', 'border', 'rounded', 'shadow-sm');
+    qDiv.setAttribute('data-question-index', idx);
+    qDiv.innerHTML = `
+      <div class="d-flex justify-content-between align-items-start">
         <label class="form-label fw-bold">質問テキスト</label>
-        <input type="text" name="question_text" class="form-control mb-3" required placeholder="例：参加希望ですか？">
+        <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="removeQuestion(this)">削除</button>
+      </div>
+      <input type="text" name="question_text" class="form-control mb-3" required placeholder="例：参加希望ですか？">
 
-        <label class="form-label fw-bold">回答タイプ</label>
-        <select name="question_type" class="form-select mb-3" onchange="toggleOptions(this, ${idx})" required>
-          <option value="text">テキストボックス</option>
-          <option value="radio">ラジオボタン</option>
-          <option value="checkbox">チェックボックス</option>
-        </select>
+      <label class="form-label fw-bold">回答タイプ</label>
+      <select name="question_type" class="form-select mb-3" onchange="toggleOptions(this, ${idx})" required>
+        <option value="text">テキストボックス</option>
+        <option value="radio">ラジオボタン</option>
+        <option value="checkbox">チェックボックス</option>
+      </select>
 
-        <div class="mb-3" id="options-area-${idx}" style="display:none;">
-          <label class="form-label">選択肢（カンマ区切りで入力）</label>
-          <input type="text" name="options_${idx}" class="form-control" placeholder="例：はい,いいえ,多分">
-        </div>
-      `;
-      container.appendChild(qDiv);
+      <div class="mb-3" id="options-area-${idx}" style="display:none;">
+        <label class="form-label">選択肢（カンマ区切りで入力）</label>
+        <input type="text" name="options_${idx}" class="form-control" placeholder="例：はい,いいえ,多分">
+      </div>
+    `;
+    container.appendChild(qDiv);
+  }
+
+  function toggleOptions(sel, idx){
+    const optArea = document.getElementById(`options-area-${idx}`);
+    const input = optArea.querySelector('input');
+    if (sel.value === 'radio' || sel.value === 'checkbox') {
+      optArea.style.display = 'block';
+      input.required = true;
+    } else {
+      optArea.style.display = 'none';
+      input.required = false;
     }
+  }
 
-    function toggleOptions(sel, idx){
-      const optArea = document.getElementById(`options-area-${idx}`);
-      const input = optArea.querySelector('input');
-      if (sel.value === 'radio' || sel.value === 'checkbox') {
-        optArea.style.display = 'block';
-        input.required = true;
-      } else {
-        optArea.style.display = 'none';
-        input.required = false;
-      }
+  function removeQuestion(btn) {
+    const qDiv = btn.closest('[data-question-index]');
+    if (qDiv) {
+      qDiv.remove();
     }
-  </script>
+  }
+</script>
+
 </body>
 </html>

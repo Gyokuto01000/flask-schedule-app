@@ -1,68 +1,186 @@
-<!-- templates/events_list.html -->
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>イベント一覧</title>
-    <!-- ✅ Bootstrap CSS を読み込む -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f7f9fc;
+            color: #2c3e50;
+            padding-bottom: 60px;
+        }
+        h1 {
+            font-weight: 900;
+            color: #34495e;
+            margin-bottom: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        h1::before {
+            content: "📅";
+            font-size: 2rem;
+        }
+
+        .table {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+            overflow: hidden;
+        }
+        thead {
+            background: #5c7cfa;
+            color: white;
+            font-weight: 700;
+        }
+        thead th {
+            border: none !important;
+            vertical-align: middle;
+            padding: 1rem 1.2rem;
+        }
+        tbody tr:hover {
+            background-color: #f1f5ff;
+            cursor: pointer;
+            transition: background-color 0.25s ease;
+        }
+        tbody td {
+            vertical-align: middle;
+            padding: 1rem 1.2rem;
+        }
+        tbody td a {
+            color: #34495e;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        tbody td a:hover {
+            color: #5c7cfa;
+            text-decoration: underline;
+        }
+
+        /* カスタムチェックボックス */
+        input[type="checkbox"].form-check-input {
+            width: 1.3rem;
+            height: 1.3rem;
+            cursor: pointer;
+            accent-color: #5c7cfa;
+            transition: accent-color 0.3s ease;
+        }
+        input[type="checkbox"].form-check-input:hover {
+            accent-color: #4263eb;
+        }
+
+        /* ボタン */
+        .btn-warning {
+            background: linear-gradient(135deg, #f6b93b 0%, #e58e26 100%);
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgb(230 144 39 / 0.4);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #e58e26 0%, #f6b93b 100%);
+            box-shadow: 0 6px 18px rgb(230 144 39 / 0.6);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgb(244 67 54 / 0.4);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+            box-shadow: 0 6px 18px rgb(244 67 54 / 0.6);
+        }
+        .btn-secondary {
+            background: #7f8c8d;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgb(127 140 141 / 0.3);
+            transition: background 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background: #606f72;
+        }
+
+        /* 削除ボタン配置 */
+        .d-flex.justify-content-end.mt-4 {
+            margin-top: 2rem !important;
+        }
+
+        /* フォーム周り余白 */
+        form > .container {
+            padding: 0;
+        }
+
+        /* スマホでテーブルは横スクロール */
+        @media (max-width: 767px) {
+            .table-responsive {
+                overflow-x: auto;
+            }
+        }
+    </style>
 </head>
 <body class="container py-5">
 
 <form method="POST" action="{{ url_for('delete_events') }}">
     <div class="container mt-4">
-        <h1 class="mb-4">すべてのイベント</h1>
-        
-        <!-- イベント一覧のテーブル -->
-        <table class="table table-striped table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
-                    <th>イベント名</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for event in events %}
-                    <tr>
-                        <td><input type="checkbox" name="event_ids" value="{{ event.id }}" class="form-check-input"></td>
-                        <td>
-                            <a href="{{ url_for('event_detail', event_id=event.id) }}" class="text-decoration-none">
-                                {{ event.name }}
-                            </a>
-                        </td>
-                        <td>
-                            <!-- 編集ボタン（黄色） -->
-                            <a href="{{ url_for('edit_event', event_id=event.id) }}" class="btn btn-warning btn-sm">編集</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="3" class="text-center">イベントはありません。</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <h1>すべてのイベント</h1>
 
-        <!-- 削除ボタン（赤色） -->
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered mb-0">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
+                        <th>イベント名</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                        <tr>
+                            <td><input type="checkbox" name="event_ids" value="{{ event.id }}" class="form-check-input"></td>
+                            <td>
+                                <a href="{{ url_for('event_detail', event_id=event.id) }}">
+                                    {{ event.name }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('edit_event', event_id=event.id) }}" class="btn btn-warning btn-sm">編集</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center text-muted fst-italic">イベントはありません。</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
         <div class="d-flex justify-content-end mt-4">
             <button type="submit" class="btn btn-danger" onclick="return confirm('選択したイベントを削除しますか？')">選択したイベントを削除</button>
         </div>
     </div>
 </form>
 
-<!-- ホームに戻るボタン -->
 <div class="mt-4">
     <a href="{{ url_for('index') }}" class="btn btn-secondary">ホームへ戻る</a>
 </div>
 
-<!-- JavaScriptでチェックボックスの一括選択 -->
 <script>
     document.getElementById('selectAll').addEventListener('change', function() {
-        var checkboxes = document.querySelectorAll('input[name="event_ids"]');
-        checkboxes.forEach(function(checkbox) {
-            checkbox.checked = document.getElementById('selectAll').checked;
-        });
+        const checked = this.checked;
+        document.querySelectorAll('input[name="event_ids"]').forEach(cb => cb.checked = checked);
     });
 </script>
+
+</body>
+</html>
