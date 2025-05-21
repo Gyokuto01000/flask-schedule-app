@@ -129,12 +129,13 @@
       </tr>
     </thead>
     <tbody>
-      {% for date in available_dates %}
+      {% for date in display_dates %}
+        {% set date_str = date.value %}
+        {% set participants = date_participants_map.get(date_str, []) %}
         <tr>
-          <td>{{ date }}</td>
-          <td>{{ date_participants.get(date, []) | length }}</td>
+          <td>{{ date.label }}</td>
+          <td>{{ participants | length }}</td>
           <td>
-            {% set participants = date_participants.get(date, []) %}
             {% if participants %}
               {{ participants | join(', ') }}
             {% else %}
@@ -146,6 +147,7 @@
     </tbody>
   </table>
 </div>
+
 
 <!-- 🧍‍♂️ 参加者ごとの詳細テーブル -->
 <div class="result-card">

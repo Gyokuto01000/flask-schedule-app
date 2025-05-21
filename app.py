@@ -377,12 +377,14 @@ def results(event_id):
     display_dates.sort(key=lambda x: datetime.datetime.strptime(x['value'], '%Y-%m-%d').date())
 
     return render_template('results.html',
-                           event=event,
-                           questions=questions,
-                           participant_answers=participant_answers,
-                           most_selected_dates=most_selected_dates,
-                           question_most_answers=question_most_answers,
-                           display_dates=display_dates)
+                       event=event,
+                       questions=questions,
+                       participant_answers=participant_answers,
+                       most_selected_dates=most_selected_dates,
+                       question_most_answers=question_most_answers,
+                       display_dates=display_dates,
+                       date_participants_map=date_participants_map)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
